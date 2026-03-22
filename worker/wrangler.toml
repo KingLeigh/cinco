@@ -1,0 +1,7 @@
+name = "cinco-api"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "4adde212788244b390705ccd85d57e73"

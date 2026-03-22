@@ -1,0 +1,21 @@
+# Results files
+results_*.txt
+
+# Python
+__pycache__/
+*.py[cod]
+.env
+venv/
+.venv/
+
+# Node / Wrangler
+node_modules/
+.wrangler/
+worker/node_modules/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
