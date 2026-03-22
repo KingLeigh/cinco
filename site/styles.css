@@ -38,34 +38,6 @@ html, body {
   overflow: hidden;
 }
 
-/* Floating sparkle particles */
-.app::before,
-.app::after {
-  content: '✦';
-  position: absolute;
-  font-size: 0.6rem;
-  color: var(--gold);
-  opacity: 0.3;
-  animation: float 6s ease-in-out infinite;
-}
-
-.app::before {
-  top: 15%;
-  left: 8%;
-  animation-delay: 0s;
-}
-
-.app::after {
-  top: 40%;
-  right: 5%;
-  animation-delay: 3s;
-  font-size: 0.4rem;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
-  50% { transform: translateY(-12px) rotate(180deg); opacity: 0.5; }
-}
 
 /* Header */
 .header {
@@ -74,16 +46,16 @@ html, body {
   flex-shrink: 0;
 }
 
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
 .sparkle {
   font-size: 1.2rem;
   color: var(--gold);
   margin-bottom: 0.25rem;
   animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.15); }
 }
 
 .date-nav {
@@ -195,15 +167,6 @@ html, body {
   border-radius: 1.25rem 1.25rem 0 0;
 }
 
-.card::after {
-  content: '✦';
-  position: absolute;
-  bottom: 1rem;
-  right: 1.25rem;
-  font-size: 1.5rem;
-  color: var(--purple-light);
-  opacity: 0.08;
-}
 
 .card-number {
   font-family: 'Playfair Display', serif;
@@ -322,6 +285,26 @@ html, body {
   font-weight: 700;
   color: var(--gold);
   letter-spacing: 0.02em;
+}
+
+/* Footer */
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1.5rem 1.25rem;
+  flex-shrink: 0;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.03em;
+}
+
+.site-footer span {
+  font-size: 0.75rem;
+  color: rgba(251, 191, 36, 0.45);
 }
 
 /* Subtle ambient glow */
