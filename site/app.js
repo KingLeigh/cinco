@@ -33,7 +33,7 @@ async function loadDate(date) {
   try {
     const response = await fetch(`${WORKER_URL}?date=${date}`);
     const json = await response.json();
-    if (json && !json.error && json.eventName) {
+    if (json && !json.error && json.eventName && json.eventName.trim()) {
       data = json;
     }
   } catch (e) {
@@ -51,15 +51,15 @@ async function loadDate(date) {
 
   // Header
   document.querySelector('.date-display').textContent = formatDateDisplay(date);
-  document.querySelector('.location-badge').textContent = data.eventShortName || '';
+  document.querySelector('.location-badge').textContent = data.eventShortName || data.eventName;
 
   // Card 01
-  document.getElementById('card-celebrating').innerHTML =
-    `<h1>${data.eventName}</h1>` +
-    `<h2>${data.subTitle}</h2>` +
-    `<h2><em>${data.location}</em></h2>` +
+  const card1 = `<h1>${data.eventName}</h1>` +
+    (data.subTitle ? `<h2>${data.subTitle}</h2>` : '') +
+    (data.location ? `<h2><em>${data.location}</em></h2>` : '') +
     '<hr>' +
     `${data.eventHtmlPayload}`;
+  document.getElementById('card-celebrating').innerHTML = card1;
 
   // Cards 02–03
   document.getElementById('card-drinking').innerHTML = data.drinkHtmlPayload;
