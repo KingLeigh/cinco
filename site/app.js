@@ -1,5 +1,18 @@
 const WORKER_URL = 'https://cinco-api.leigh-herbert.workers.dev';
 
+const PLACEHOLDER_DATA = {
+  "subTitle": "The best drinking day of the week",
+  "location": "Worldwide",
+  "drinkHtmlPayload": "Anything your heart desires, there are no rules today! <hr> We recommend an ice cold <b>Bud Light</b> - it's an excellent vintage this year.",
+  "eventHtmlPayload": "<i>No special event data was found for this day.</i><hr>But that's just a great excuse to make some traditions of your own. <b>Cheers!</b>",
+  "moreInfoHtmlPayload": "Some large observational studies have suggested that <b>moderate drinkers</b> might outlive both heavy drinkers and non-drinkers.<hr>Archaeological evidence suggests beer production dates back over <b>13,000 years</b>. In ancient Mesopotamia, beer was a daily staple and even used as wages.<hr><b>Winston Churchill</b> reportedly drank throughout the day while leading WWII"
+};
+
+function getWeekdayName(isoDate) {
+  const [year, month, day] = isoDate.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString('en-US', { weekday: 'long' });
+}
+
 // Determine date: ?date= param or today
 function getDate() {
   const param = new URLSearchParams(window.location.search).get('date');
@@ -15,7 +28,26 @@ function formatDateDisplay(isoDate) {
 }
 
 async function loadDate(date) {
-  const data = await fetch(`${WORKER_URL}?date=${date}`).then(r => r.json());
+  let data = null;
+
+  try {
+    const response = await fetch(`${WORKER_URL}?date=${date}`);
+    const json = await response.json();
+    if (json && !json.error && json.eventName) {
+      data = json;
+    }
+  } catch (e) {
+    // API unavailable — fall through to placeholder
+  }
+
+  if (!data) {
+    const weekday = getWeekdayName(date);
+    data = {
+      ...PLACEHOLDER_DATA,
+      eventName: weekday,
+      eventShortName: weekday.toUpperCase()
+    };
+  }
 
   // Header
   document.querySelector('.date-display').textContent = formatDateDisplay(date);
