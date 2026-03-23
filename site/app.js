@@ -13,11 +13,16 @@ function getWeekdayName(isoDate) {
   return new Date(year, month - 1, day).toLocaleDateString('en-US', { weekday: 'long' });
 }
 
+function getLocalToday() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+}
+
 // Determine date: ?date= param or today
 function getDate() {
   const param = new URLSearchParams(window.location.search).get('date');
   if (param && /^\d{4}-\d{2}-\d{2}$/.test(param)) return param;
-  return new Date().toISOString().slice(0, 10);
+  return getLocalToday();
 }
 
 function formatDateDisplay(isoDate) {
@@ -61,9 +66,24 @@ async function loadDate(date) {
     `${data.eventHtmlPayload}`;
   document.getElementById('card-celebrating').innerHTML = card1;
 
-  // Cards 02–03
+  // Card 02
   document.getElementById('card-drinking').innerHTML = data.drinkHtmlPayload;
-  document.getElementById('card-how').innerHTML = data.moreInfoHtmlPayload;
+
+  // Card 03 — hide entirely if no moreInfoHtmlPayload
+  const cardHowWrapper = document.getElementById('card-how-wrapper');
+  const hasMoreInfo = data.moreInfoHtmlPayload && data.moreInfoHtmlPayload.trim();
+  cardHowWrapper.style.display = hasMoreInfo ? '' : 'none';
+  if (hasMoreInfo) {
+    document.getElementById('card-how').innerHTML = data.moreInfoHtmlPayload;
+  }
+
+  // Sync dot count to visible cards and re-attach click listeners
+  const visibleCards = document.querySelectorAll('.card:not([style*="display: none"])');
+  const dotsContainer = document.getElementById('dots');
+  dotsContainer.innerHTML = Array.from(visibleCards).map((_, i) =>
+    `<span class="dot${i === 0 ? ' active' : ''}"></span>`
+  ).join('');
+  setupDots();
 
   // Open all links in new tab
   document.querySelectorAll('.card-body a').forEach(a => {
@@ -103,15 +123,15 @@ document.getElementById('next-day').addEventListener('click', () => {
 });
 
 document.getElementById('jump-prev').addEventListener('click', () => {
-  navigateToDate(new Date().toISOString().slice(0, 10));
+  navigateToDate(getLocalToday());
 });
 
 document.getElementById('jump-next').addEventListener('click', () => {
-  navigateToDate(new Date().toISOString().slice(0, 10));
+  navigateToDate(getLocalToday());
 });
 
 function updateTodayJumps(date) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getLocalToday();
   document.getElementById('jump-prev').classList.toggle('hidden', date <= today);
   document.getElementById('jump-next').classList.toggle('hidden', date >= today);
 }
@@ -122,28 +142,24 @@ window.addEventListener('popstate', () => {
 
 // Dot navigation
 const container = document.getElementById('cards');
-const dots = document.querySelectorAll('.dot');
 
 function updateDots() {
+  const dots = document.querySelectorAll('.dot');
   const scrollLeft = container.scrollLeft;
   const cardWidth = container.querySelector('.card').offsetWidth;
   const gap = parseFloat(getComputedStyle(container).gap) || 16;
   const index = Math.round(scrollLeft / (cardWidth + gap));
+  dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+}
 
-  dots.forEach((dot, i) => {
-    dot.classList.toggle('active', i === index);
+function setupDots() {
+  document.querySelectorAll('.dot').forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      const cardWidth = container.querySelector('.card').offsetWidth;
+      const gap = parseFloat(getComputedStyle(container).gap) || 16;
+      container.scrollTo({ left: i * (cardWidth + gap), behavior: 'smooth' });
+    });
   });
 }
 
 container.addEventListener('scroll', updateDots, { passive: true });
-
-dots.forEach((dot, i) => {
-  dot.addEventListener('click', () => {
-    const cardWidth = container.querySelector('.card').offsetWidth;
-    const gap = parseFloat(getComputedStyle(container).gap) || 16;
-    container.scrollTo({
-      left: i * (cardWidth + gap),
-      behavior: 'smooth'
-    });
-  });
-});
