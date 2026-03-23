@@ -231,6 +231,19 @@ html, body {
   color: var(--gold-light);
 }
 
+.card-body a {
+  color: var(--gold);
+  text-decoration: underline;
+  text-decoration-color: rgba(251, 191, 36, 0.4);
+  text-underline-offset: 2px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.card-body a:hover {
+  color: var(--gold-light);
+  text-decoration-color: var(--gold-light);
+}
+
 .card-body h2 {
   font-family: 'Inter', sans-serif;
   font-weight: 500;
@@ -238,6 +251,27 @@ html, body {
   color: var(--purple-glow);
   letter-spacing: 0.02em;
   margin-bottom: 0;
+}
+
+.card-body ul, .card-body ol {
+  list-style: none;
+  margin: 0.5rem 0;
+  padding: 0;
+}
+
+.card-body li {
+  padding: 0.3rem 0 0.3rem 1.75rem;
+  position: relative;
+}
+
+.card-body li::before {
+  content: '✦';
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-size: 0.55rem;
+  top: 0.6rem;
+  opacity: 0.8;
 }
 
 .card-body hr {
