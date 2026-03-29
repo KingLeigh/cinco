@@ -321,24 +321,93 @@ html, body {
   letter-spacing: 0.02em;
 }
 
-/* Footer */
-.site-footer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  padding: 0.5rem 1.5rem 1.25rem;
+
+/* Editor panel */
+.editor-panel {
+  padding: 0 1.5rem 0.75rem;
   flex-shrink: 0;
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.45);
-  letter-spacing: 0.03em;
+  max-height: 40vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
-.site-footer span {
-  font-size: 0.75rem;
-  color: rgba(251, 191, 36, 0.45);
+.editor-panel::-webkit-scrollbar {
+  width: 3px;
+}
+
+.editor-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+.editor-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--gold);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+.editor-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--purple-glow);
+  margin-bottom: 0.6rem;
+}
+
+.editor-input {
+  display: block;
+  width: 100%;
+  margin-top: 0.3rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--card-border);
+  border-radius: 0.5rem;
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.editor-input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.editor-input:focus {
+  border-color: var(--gold);
+}
+
+.editor-textarea {
+  min-height: 3.5rem;
+  resize: vertical;
+}
+
+.editor-export {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(253, 230, 138, 0.1));
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  border-radius: 0.5rem;
+  color: var(--gold-light);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.editor-export:hover {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(253, 230, 138, 0.15));
+  border-color: var(--gold);
 }
 
 /* Subtle ambient glow */

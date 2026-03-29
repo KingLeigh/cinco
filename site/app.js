@@ -32,42 +32,21 @@ function formatDateDisplay(isoDate) {
   });
 }
 
-async function loadDate(date) {
-  let data = null;
-
-  try {
-    const response = await fetch(`${WORKER_URL}?date=${date}`);
-    const json = await response.json();
-    if (json && !json.error && json.eventName && json.eventName.trim()) {
-      data = json;
-    }
-  } catch (e) {
-    // API unavailable — fall through to placeholder
-  }
-
-  if (!data) {
-    const weekday = getWeekdayName(date);
-    data = {
-      ...PLACEHOLDER_DATA,
-      eventName: weekday,
-      eventShortName: weekday.toUpperCase()
-    };
-  }
-
+function renderData(data, date) {
   // Header
-  document.querySelector('.date-display').textContent = formatDateDisplay(date);
-  document.querySelector('.location-badge').textContent = data.eventShortName || data.eventName;
+  document.querySelector('.date-display').textContent = date ? formatDateDisplay(date) : (data.eventName || 'Editor');
+  document.querySelector('.location-badge').textContent = data.eventShortName || data.eventName || '';
 
   // Card 01
-  const card1 = `<h1>${data.eventName}</h1>` +
+  const card1 = `<h1>${data.eventName || ''}</h1>` +
     (data.subTitle ? `<h2>${data.subTitle}</h2>` : '') +
     (data.location ? `<h2><em>${data.location}</em></h2>` : '') +
     '<hr>' +
-    `${data.eventHtmlPayload}`;
+    `${data.eventHtmlPayload || ''}`;
   document.getElementById('card-celebrating').innerHTML = card1;
 
   // Card 02
-  document.getElementById('card-drinking').innerHTML = data.drinkHtmlPayload;
+  document.getElementById('card-drinking').innerHTML = data.drinkHtmlPayload || '';
 
   // Card 03 — hide entirely if no moreInfoHtmlPayload
   const cardHowWrapper = document.getElementById('card-how-wrapper');
@@ -93,11 +72,105 @@ async function loadDate(date) {
 
   // Reset scroll to first card
   document.getElementById('cards').scrollTo({ left: 0, behavior: 'smooth' });
+}
 
+async function loadDate(date) {
+  let data = null;
+
+  try {
+    const response = await fetch(`${WORKER_URL}?date=${date}`);
+    const json = await response.json();
+    if (json && !json.error && json.eventName && json.eventName.trim()) {
+      data = json;
+    }
+  } catch (e) {
+    // API unavailable — fall through to placeholder
+  }
+
+  if (!data) {
+    const weekday = getWeekdayName(date);
+    data = {
+      ...PLACEHOLDER_DATA,
+      eventName: weekday,
+      eventShortName: weekday.toUpperCase()
+    };
+  }
+
+  renderData(data, date);
   updateTodayJumps(date);
 }
 
-loadDate(getDate());
+// Editor mode
+const IS_EDITOR = /\/editor\/?$/.test(window.location.pathname);
+
+if (IS_EDITOR) {
+  // Hide date nav, show editor panel
+  document.querySelector('.date-nav').style.display = 'none';
+  document.getElementById('editor-panel').style.display = '';
+
+  const fields = [
+    'eventName', 'eventShortName', 'subTitle', 'location',
+    'eventHtmlPayload', 'drinkHtmlPayload', 'moreInfoHtmlPayload'
+  ];
+
+  const htmlFields = ['eventHtmlPayload', 'drinkHtmlPayload', 'moreInfoHtmlPayload'];
+
+  function editorUpdate() {
+    const data = {};
+    fields.forEach(f => {
+      let v = document.getElementById('ed-' + f).value;
+      if (htmlFields.includes(f)) v = v.replace(/\n/g, '<hr>');
+      data[f] = v;
+    });
+    renderData(data, null);
+  }
+
+  function wrapSelection(el, tag) {
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const text = el.value;
+    const selected = text.slice(start, end);
+    const wrapped = `<${tag}>${selected}</${tag}>`;
+    el.value = text.slice(0, start) + wrapped + text.slice(end);
+    el.selectionStart = start + tag.length + 2;
+    el.selectionEnd = end + tag.length + 2;
+    el.focus();
+    el.dispatchEvent(new Event('input'));
+  }
+
+  document.getElementById('editor-panel').addEventListener('keydown', (e) => {
+    if (!(e.metaKey || e.ctrlKey)) return;
+    const tag = e.key === 'b' ? 'b' : e.key === 'i' ? 'i' : null;
+    if (!tag) return;
+    const el = document.activeElement;
+    if (!el || !el.classList.contains('editor-input')) return;
+    e.preventDefault();
+    wrapSelection(el, tag);
+  });
+
+  fields.forEach(f => {
+    document.getElementById('ed-' + f).addEventListener('input', editorUpdate);
+  });
+
+  // Export CSV to clipboard
+  document.getElementById('ed-export').addEventListener('click', () => {
+    const values = fields.map(f => {
+      let v = document.getElementById('ed-' + f).value;
+      if (htmlFields.includes(f)) v = v.replace(/\n/g, '<hr>');
+      return '"' + v.replace(/"/g, '""') + '"';
+    });
+    navigator.clipboard.writeText(values.join(',')).then(() => {
+      const btn = document.getElementById('ed-export');
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy CSV to Clipboard'; }, 1500);
+    });
+  });
+
+  // Initial render with empty data
+  renderData({}, null);
+} else {
+  loadDate(getDate());
+}
 
 // Date navigation
 function shiftDate(isoDate, days) {

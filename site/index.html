@@ -23,6 +23,32 @@
       <p class="location-badge"></p>
     </header>
 
+    <div id="editor-panel" class="editor-panel" style="display:none;">
+      <h2 class="editor-title">Content Editor</h2>
+      <label class="editor-label">Event Name
+        <input type="text" id="ed-eventName" class="editor-input" placeholder="e.g. National Taco Day">
+      </label>
+      <label class="editor-label">Event Short Name
+        <input type="text" id="ed-eventShortName" class="editor-input" placeholder="e.g. TACO DAY">
+      </label>
+      <label class="editor-label">Subtitle
+        <input type="text" id="ed-subTitle" class="editor-input" placeholder="e.g. A delicious celebration">
+      </label>
+      <label class="editor-label">Location
+        <input type="text" id="ed-location" class="editor-input" placeholder="e.g. Worldwide">
+      </label>
+      <label class="editor-label">Event Info (HTML)
+        <textarea id="ed-eventHtmlPayload" class="editor-input editor-textarea" placeholder="HTML content for card 1"></textarea>
+      </label>
+      <label class="editor-label">Drink Info (HTML)
+        <textarea id="ed-drinkHtmlPayload" class="editor-input editor-textarea" placeholder="HTML content for card 2"></textarea>
+      </label>
+      <label class="editor-label">More Info (HTML)
+        <textarea id="ed-moreInfoHtmlPayload" class="editor-input editor-textarea" placeholder="HTML content for card 3 (leave empty to hide)"></textarea>
+      </label>
+      <button id="ed-export" class="editor-export">Copy CSV to Clipboard</button>
+    </div>
+
     <div class="cards-container" id="cards">
       <div class="card" data-card="0">
         <span class="card-number">01</span>
@@ -56,12 +82,6 @@
     <div class="toast-banner" id="toast-banner">
       <span class="toast-text"></span>
     </div>
-
-    <footer class="site-footer">
-      <span>&#10022;</span>
-      <em>Because it's Cinco de Mayo somewhere, probably.</em>
-      <span>&#10022;</span>
-    </footer>
   </div>
 
   <script src="app.js"></script>
