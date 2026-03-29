@@ -138,12 +138,31 @@ if (IS_EDITOR) {
     el.dispatchEvent(new Event('input'));
   }
 
+  function wrapList(el) {
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const text = el.value;
+    const selected = text.slice(start, end);
+    const items = selected.split('\n').filter(l => l.trim());
+    const list = '<ul>' + items.map(l => `<li>${l.trim()}</li>`).join('') + '</ul>';
+    el.value = text.slice(0, start) + list + text.slice(end);
+    el.selectionStart = start;
+    el.selectionEnd = start + list.length;
+    el.focus();
+    el.dispatchEvent(new Event('input'));
+  }
+
   document.getElementById('editor-panel').addEventListener('keydown', (e) => {
     if (!(e.metaKey || e.ctrlKey)) return;
-    const tag = e.key === 'b' ? 'b' : e.key === 'i' ? 'i' : null;
-    if (!tag) return;
     const el = document.activeElement;
     if (!el || !el.classList.contains('editor-input')) return;
+    if (e.key === 'l') {
+      e.preventDefault();
+      wrapList(el);
+      return;
+    }
+    const tag = e.key === 'b' ? 'b' : e.key === 'i' ? 'i' : null;
+    if (!tag) return;
     e.preventDefault();
     wrapSelection(el, tag);
   });
